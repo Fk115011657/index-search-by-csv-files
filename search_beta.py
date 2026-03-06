@@ -88,7 +88,7 @@ def parse_csv_line(line: str, delimiter: str) -> list:
 def calculate_relevance(raw_line: str, query_parts: list, col_indices: dict, delimiter: str) -> int:
     """
     Вычисляет релевантность найденной записи.
-    Выше баллы для совпадений в более важных п��лях.
+    Выше баллы для совпадений в более важных полях.
     """
     parts = parse_csv_line(raw_line, delimiter)
     score = 0
@@ -240,14 +240,11 @@ def search_db_optimized(index_db: Path, query: str, csv_path: Path, db_name: str
         conn.close()
 
 
-def search_all(query: str, mode: str = "all") -> list:
+def search_all(query: str) -> list:
     """Поиск по всем доступным базам"""
     all_results = []
 
-    if mode == "ee":
-        db_list = ["estonia"]
-    else:
-        db_list = [f.stem for f in INDEX_DIR.glob("*.db") if f.suffix == ".db"]
+    db_list = [f.stem for f in INDEX_DIR.glob("*.db") if f.suffix == ".db"]
 
     for db_name in db_list:
         db_path = INDEX_DIR / f"{db_name}.db"
@@ -292,29 +289,11 @@ def print_header():
 
 def main():
     print_header()
-
-    print(f"{Fore.CYAN}Выберите режим поиска:{Style.RESET_ALL}")
-    print(f"{Fore.YELLOW}1.{Style.RESET_ALL} 🇪🇪 Только Эстония")
-    print(f"{Fore.YELLOW}2.{Style.RESET_ALL} 🌍 Все базы\n")
-
-    while True:
-        mode_in = input(f"{Fore.GREEN}Введите 1 или 2:{Style.RESET_ALL} ").strip()
-        if mode_in == "1":
-            mode = "ee"
-            mode_name = "Эстонии"
-            print(f"{Fore.CYAN}\n✓ Режим: поиск только в Эстонии\n{Style.RESET_ALL}")
-            break
-        elif mode_in == "2":
-            mode = "all"
-            mode_name = "всех базах"
-            print(f"{Fore.CYAN}\n✓ Режим: поиск по всем базам\n{Style.RESET_ALL}")
-            break
-        else:
-            print(f"{Fore.RED}❌ Неверный ввод, попробуйте снова.{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}✓ Режим: поиск по всем доступным базам\n{Style.RESET_ALL}")
 
     while True:
         query = input(
-            f"\n{Fore.GREEN}Введите поисковый запрос (или 'exit' для выхода):{Style.RESET_ALL} "
+            f"{Fore.GREEN}Введите поисковый запрос (или 'exit' для выхода):{Style.RESET_ALL} "
         ).strip()
 
         if query.lower() == "exit":
@@ -327,7 +306,7 @@ def main():
 
         print(f"\n{Fore.CYAN}🔍 Поиск '{query}'...{Style.RESET_ALL}")
 
-        results = search_all(query, mode)
+        results = search_all(query)
 
         if not results:
             print(f"\n{Fore.RED}❌ Ничего не найдено{Style.RESET_ALL}\n")
